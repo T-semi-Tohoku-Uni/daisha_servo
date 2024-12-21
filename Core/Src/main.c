@@ -54,8 +54,8 @@ FDCAN_FilterTypeDef sFilterConfig;
 uint8_t TxData[8] = {};
 uint8_t RxData[8] = {};
 
-int16_t kai = 1;
 int16_t dutty_re = 0;
+int16_t kai = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,7 +71,6 @@ static void MX_TIM2_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo1ITs){
-	int16_t CANID = 0;
 	if (RESET != (RxFifo1ITs & FDCAN_IT_RX_FIFO1_NEW_MESSAGE)) {
 
 	        /* Retrieve Rx messages from RX FIFO0 */
@@ -81,8 +80,8 @@ void HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo1ITs)
 			Error_Handler();
 		}
 
-		if (CANID == RxHeader.Identifier) {
-
+		if (0x210 == RxHeader.Identifier) {
+			kai = RxData[0];
 		}
 	}
 }
@@ -183,7 +182,7 @@ int main(void)
 		  dutty_re = 95;
 	  }
 	  else if (0 == kai) {
-		  dutty_re = 1000 - 60;
+		  dutty_re = 0;
 	  }
 	  __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,dutty_re);
 	  HAL_Delay(10);
